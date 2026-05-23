@@ -86,50 +86,67 @@
     /* =====================================================================
        WORD SEARCH OVERLAY — appears when bunny is tapped
     ===================================================================== */
+    /* ---- WORD SEARCH OVERLAY ---- */
     #wordsearch-overlay {
       position:fixed; inset:0; z-index:500;
       background:rgba(255,235,248,0.97);
       backdrop-filter:blur(12px);
+      /* Hidden by default - shown via .show class */
       display:none; flex-direction:column;
       align-items:center; justify-content:center;
-      gap:14px; padding:20px;
+      padding:24px 20px;
+      overflow-y:auto;
     }
     #wordsearch-overlay.show { display:flex; }
 
+    /* Inner game container - centres everything and limits width */
+    #ws-game {
+      display:flex; flex-direction:column;
+      align-items:center;
+      width:100%; max-width:320px;
+    }
+
     #ws-title {
       font-family:"Press Start 2P",monospace;
-      font-size:0.65rem; color:var(--pink-d);
+      font-size:0.62rem; color:var(--pink-d);
       text-align:center; line-height:2; letter-spacing:1px;
+      margin-bottom:4px;
     }
     #ws-subtitle {
       font-family:"Klee One",cursive;
-      font-size:0.85rem; color:var(--text); text-align:center;
+      font-size:0.8rem; color:var(--text); text-align:center;
+      margin-bottom:14px;
     }
 
-    /* Timer bar */
+    /* Timer bar + countdown number side by side */
+    #ws-timer-row {
+      display:flex; align-items:center; gap:10px;
+      width:100%; margin-bottom:14px;
+    }
     #ws-timer-wrap {
-      width:280px; background:rgba(244,114,182,0.15);
+      flex:1;
+      background:rgba(244,114,182,0.15);
       border:2px solid var(--pink); border-radius:4px; height:12px; overflow:hidden;
     }
     #ws-timer-bar {
       height:100%; width:100%;
       background:linear-gradient(90deg,#f9a8d4,#f472b6);
-      transition:width 1s linear;
-      transform-origin:left;
+      transition:width 1s linear; transform-origin:left;
     }
-
     #ws-timer-text {
       font-family:"Press Start 2P",monospace;
       font-size:0.45rem; color:var(--pink-d);
+      white-space:nowrap; flex-shrink:0;
     }
 
-    /* Word list */
+    /* Word chips */
     #ws-words {
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+      display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+      width:100%; margin-bottom:14px;
     }
     .ws-word {
       font-family:"Press Start 2P",monospace;
-      font-size:0.38rem; padding:5px 10px;
+      font-size:0.34rem; padding:5px 10px;
       background:white; border:2px solid var(--pink);
       border-radius:20px; color:var(--text);
       transition:all 0.3s;
@@ -139,36 +156,36 @@
       text-decoration:line-through; opacity:0.7;
     }
 
-    /* The grid itself */
+    /* Grid wrapper - centres the grid */
     #ws-grid-wrap {
-      position:relative;
-      user-select:none;
-      touch-action:none;
+      display:flex; justify-content:center;
+      user-select:none; touch-action:none;
+      margin-bottom:10px;
     }
     #ws-grid {
       display:grid;
-      gap:0;
+      gap:2px;
       cursor:crosshair;
     }
     .ws-cell {
-      width:32px; height:32px;
+      width:26px; height:26px;
       display:flex; align-items:center; justify-content:center;
       font-family:"Press Start 2P",monospace;
-      font-size:0.5rem; color:var(--text);
-      border:1px solid rgba(244,114,182,0.2);
+      font-size:0.38rem; color:var(--text);
+      border:1px solid rgba(244,114,182,0.25);
       background:white;
-      transition:background 0.15s, color 0.15s;
-      border-radius:4px;
+      transition:background 0.12s, color 0.12s;
+      border-radius:3px;
     }
-    .ws-cell.selecting { background:#fde8f0; color:var(--pink-d); }
+    .ws-cell.selecting  { background:#fde8f0; color:var(--pink-d); }
     .ws-cell.found-cell { background:var(--pink); color:white; }
 
-    /* Instructions */
     #ws-instructions {
-      font-family:"Klee One",cursive; font-size:0.78rem;
-      color:var(--text); text-align:center; opacity:0.8;
+      font-family:"Klee One",cursive; font-size:0.75rem;
+      color:var(--text); text-align:center; opacity:0.75;
     }
 
+    /* Win message inside word search */
     /* Win message inside word search */
     #ws-win {
       display:none; flex-direction:column; align-items:center; gap:10px;
@@ -302,7 +319,112 @@
     ===================================================================== */
     #confetti-canvas {
       position:fixed; top:0; left:0; width:100%; height:100%;
-      pointer-events:none; z-index:350; display:none;
+      pointer-events:none;
+      z-index:390; /* full-screen; behind collage (400), above cake popup (300) */
+      display:none;
+    }
+
+
+
+    /* =====================================================================
+       CALENDAR FLIP TRANSITION — flips through months and pins May 21
+    ===================================================================== */
+    #calendar-screen {
+      position:fixed; inset:0; z-index:390;
+      display:none; align-items:center; justify-content:center;
+      flex-direction:column; gap:18px;
+      background:linear-gradient(135deg,rgba(253,232,240,0.94),rgba(232,217,248,0.94),rgba(252,213,181,0.94));
+      overflow:hidden; padding:24px;
+    }
+    #calendar-screen.show { display:flex; }
+    #calendar-screen::before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background-image:radial-gradient(circle at 20% 20%,rgba(249,168,212,0.25),transparent 24%),
+                       radial-gradient(circle at 80% 80%,rgba(167,139,250,0.25),transparent 28%);
+    }
+    #calendar-title {
+      position:relative; z-index:1;
+      font-family:"Press Start 2P",monospace;
+      font-size:0.58rem; color:var(--pink-d);
+      letter-spacing:1px; line-height:2; text-align:center;
+      text-shadow:2px 2px 0 rgba(255,255,255,0.9);
+    }
+    #calendar-card {
+      position:relative; z-index:1;
+      width:min(340px,88vw); height:360px;
+      background:#fff9fc; border:4px solid var(--pink);
+      box-shadow:10px 10px 0 rgba(167,139,250,0.28);
+      border-radius:8px; overflow:hidden;
+      transform-style:preserve-3d;
+      animation:calendarFloat 2.3s ease-in-out infinite alternate;
+    }
+    @keyframes calendarFloat { from{transform:translateY(0)} to{transform:translateY(-8px)} }
+    #calendar-top {
+      height:78px; background:linear-gradient(90deg,#f472b6,#a78bfa);
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-family:"Press Start 2P",monospace;
+      font-size:0.62rem; letter-spacing:2px; text-transform:uppercase;
+      position:relative;
+    }
+    #calendar-top::before, #calendar-top::after {
+      content:""; position:absolute; top:14px;
+      width:18px; height:18px; border-radius:50%; background:#fff9fc;
+      box-shadow:0 0 0 3px rgba(90,45,110,0.12);
+    }
+    #calendar-top::before { left:58px; }
+    #calendar-top::after { right:58px; }
+    #calendar-page {
+      height:282px; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:14px;
+      backface-visibility:hidden;
+    }
+    #calendar-month {
+      font-family:"Press Start 2P",monospace;
+      font-size:0.8rem; color:var(--text);
+      letter-spacing:2px; min-height:2em;
+    }
+    #calendar-days {
+      display:grid; grid-template-columns:repeat(7,1fr);
+      gap:6px; width:86%;
+    }
+    .cal-day {
+      aspect-ratio:1; border-radius:6px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:"Press Start 2P",monospace;
+      font-size:0.42rem; color:rgba(90,45,110,0.72);
+      background:rgba(244,114,182,0.08);
+      border:1px solid rgba(244,114,182,0.12);
+    }
+    .cal-day.empty { background:transparent; border-color:transparent; }
+    .cal-day.pin {
+      background:var(--pink); color:white;
+      box-shadow:0 0 0 4px rgba(244,114,182,0.22), 0 0 18px rgba(244,114,182,0.8);
+      animation:pinPulse 0.75s ease-in-out infinite alternate;
+      position:relative;
+    }
+    .cal-day.pin::after {
+      content:"❤"; position:absolute; top:-17px; right:-11px;
+      font-size:0.7rem; color:#e11d48;
+      filter:drop-shadow(1px 1px 0 white);
+      animation:heartPop 0.9s ease-in-out infinite alternate;
+    }
+    @keyframes pinPulse { from{transform:scale(1)} to{transform:scale(1.12)} }
+    @keyframes heartPop { from{transform:rotate(-8deg) scale(1)} to{transform:rotate(8deg) scale(1.16)} }
+    #calendar-card.flipping #calendar-page {
+      animation:pageFlip 0.34s ease-in-out;
+    }
+    @keyframes pageFlip {
+      0%{transform:rotateX(0deg); opacity:1}
+      48%{transform:rotateX(88deg); opacity:0.25}
+      52%{transform:rotateX(-88deg); opacity:0.25}
+      100%{transform:rotateX(0deg); opacity:1}
+    }
+    #calendar-note {
+      position:relative; z-index:1;
+      font-family:"Klee One",cursive;
+      color:var(--text); font-size:1rem; text-align:center;
+      background:rgba(255,255,255,0.72); border:2px solid rgba(244,114,182,0.4);
+      border-radius:8px; padding:8px 14px;
     }
 
     /* =====================================================================
@@ -331,13 +453,20 @@
       height:75px; z-index:2;
       display:flex; align-items:flex-start; overflow:hidden;
     }
-    /* The bunting image repeats to fill the full width */
+    /* Star bunting image stretched across the full width.
+       mix-blend-mode:multiply makes the white background transparent
+       so only the coloured stars show on top of the gradient. */
     #bunting-img {
       width:100%; height:75px;
       object-fit:cover; object-position:top center;
-      /* Use multiply blend so white bg disappears over gradient */
       mix-blend-mode:multiply;
+      display:block;
       animation:buntingWave 3s ease-in-out infinite alternate;
+    }
+    /* The bunting bar itself must have a white or light background
+       for multiply blend to work correctly */
+    #bunting-bar {
+      background:white;
     }
     @keyframes buntingWave {
       0%   {transform:scaleY(1) translateY(0)}
@@ -418,6 +547,48 @@
       box-shadow:3px 3px 0 #831843;
       font-family:"Press Start 2P",monospace; font-size:0.36rem; letter-spacing:1px; cursor:pointer;
     }
+  
+    /* === FIXED CSS BUNTING: no white image banner, real animated flags === */
+    #bunting-bar {
+      position:absolute; top:0; left:0; right:0;
+      height:86px; z-index:3;
+      display:flex; justify-content:center; align-items:flex-start;
+      gap:8px; padding-top:20px;
+      background:transparent !important;
+      overflow:visible; pointer-events:none;
+      animation:buntingFloat 3s ease-in-out infinite alternate;
+    }
+    #bunting-bar::before {
+      content:"";
+      position:absolute; left:3%; right:3%; top:18px;
+      height:3px; background:rgba(219,39,119,0.55);
+      border-radius:99px;
+      box-shadow:0 2px 0 rgba(255,255,255,0.55);
+    }
+    #bunting-img { display:none !important; }
+    .bunting-flag {
+      width:0; height:0;
+      border-left:16px solid transparent;
+      border-right:16px solid transparent;
+      border-top:34px solid var(--pink);
+      filter:drop-shadow(2px 3px 0 rgba(167,139,250,0.25));
+      transform-origin:top center;
+      animation:flagWiggle 1.6s ease-in-out infinite alternate;
+      position:relative; z-index:4;
+    }
+    .bunting-flag:nth-child(3n+1){ border-top-color:#f472b6; }
+    .bunting-flag:nth-child(3n+2){ border-top-color:#a78bfa; animation-delay:.2s; }
+    .bunting-flag:nth-child(3n+3){ border-top-color:#fbbf24; animation-delay:.4s; }
+    .bunting-flag:nth-child(4n){ border-top-color:#34d399; }
+    @keyframes buntingFloat {
+      from{ transform:translateY(0) rotate(-0.5deg); }
+      to  { transform:translateY(4px) rotate(0.5deg); }
+    }
+    @keyframes flagWiggle {
+      from{ transform:rotate(-3deg); }
+      to  { transform:rotate(3deg); }
+    }
+
   </style>
 </head>
 <body>
@@ -437,37 +608,42 @@
   </div>
 
   <!-- ================================================================
-       WORD SEARCH OVERLAY
-       Shown when bunny is tapped. She must find all 4 words in 3 min.
-       Winning releases the balloon. Losing lets her retry.
+       AUDIO — put your mp3 files in an "assets" folder next to this file.
+       bebo-21.mp3  = background music (loops softly)
+       pop.mp3      = balloon / candle pop sound
+       sparkle.mp3  = sparkle fanfare when all candles are blown
   ================================================================ -->
+  <audio id="bg-music"      src="assets/bebo-21.mp3"  loop    preload="auto"></audio>
+  <audio id="pop-sound"     src="assets/pop.mp3"              preload="auto"></audio>
+  <audio id="sparkle-sound" src="assets/sparkle.mp3"          preload="auto"></audio>
   <div id="wordsearch-overlay">
 
     <!-- Normal game view -->
     <div id="ws-game">
       <div id="ws-title">find all the words!<br/>(o^w^o)</div>
-      <div id="ws-subtitle">drag to highlight words — you have 3 minutes!</div>
+      <div id="ws-subtitle">words go left, right, up or down — you have 5 minutes!</div>
 
-      <!-- Countdown bar + time display -->
-      <div id="ws-timer-wrap"><div id="ws-timer-bar"></div></div>
-      <div id="ws-timer-text">3:00</div>
+      <!-- Timer: progress bar + countdown number in one row -->
+      <div id="ws-timer-row">
+        <div id="ws-timer-wrap"><div id="ws-timer-bar"></div></div>
+        <div id="ws-timer-text">5:00</div>
+      </div>
 
-      <!-- Word list (words go green when found) -->
+      <!-- Word chips (turn pink when found) -->
       <div id="ws-words"></div>
 
-      <!-- The letter grid -->
+      <!-- Letter grid, centred -->
       <div id="ws-grid-wrap">
         <div id="ws-grid"></div>
       </div>
 
-      <div id="ws-instructions">click + drag to select • words can go in any direction</div>
+      <div id="ws-instructions">click + drag • left, right, up or down only!</div>
     </div>
 
-    <!-- WIN screen (shown when all words found) -->
-    <div id="ws-win">
+    <!-- WIN screen — auto-closes and releases balloon, no button needed -->
+    <div id="ws-win" style="display:none;">
       <h2>you found them all!<br/>(^w^)</h2>
-      <p>now catch the balloon for your surprise...</p>
-      <button id="ws-win-btn" onclick="onWordSearchWin()">release the balloon!</button>
+      <p>releasing the balloon... (>w<)</p>
     </div>
 
     <!-- LOSE screen (shown when timer runs out) -->
@@ -493,6 +669,20 @@
 
   <!-- Full-screen confetti canvas -->
   <canvas id="confetti-canvas"></canvas>
+
+
+  <!-- Calendar transition: flips through months, lands on May 21 -->
+  <div id="calendar-screen" aria-hidden="true">
+    <div id="calendar-title">* finding the special day... *</div>
+    <div id="calendar-card">
+      <div id="calendar-top">2026</div>
+      <div id="calendar-page">
+        <div id="calendar-month">JAN</div>
+        <div id="calendar-days"></div>
+      </div>
+    </div>
+    <div id="calendar-note">wait for it... (´｡• ᵕ •｡`) ♡</div>
+  </div>
 
   <!-- ================================================================
        BIRTHDAY POPUP — pixel cake with blow-out candles
@@ -575,12 +765,31 @@
   }
 
   /* ==================================================================
-     WORD SEARCH — configuration
+     MUSIC & SOUND EFFECTS
+     startMusic()  — starts the looping background track (first user tap)
+     playSound(id) — plays a one-shot sound effect by its <audio> element id
   ================================================================== */
+  function startMusic() {
+    var music = document.getElementById("bg-music");
+    if(!music || music._started) return;
+    music._started = true;      /* don't restart if already playing */
+    music.volume = 0.35;
+    music.play().catch(function(){});  /* browsers block autoplay — needs a user gesture */
+  }
+
+  function playSound(id, volume) {
+    var snd = document.getElementById(id);
+    if(!snd) return;
+    snd.volume = (volume != null) ? volume : 0.6;
+    snd.currentTime = 0;
+    snd.play().catch(function(){});
+  }
   /* Words Byanda must find (all uppercase) */
+  /* Words to find — short and easy, horizontal only = super simple! */
   var WS_WORDS = ["BYANDA","TWENTYONE","QUEEN","BIRTHDAY"];
-  var WS_GRID_SIZE = 13;    /* 13×13 grid */
-  var WS_TIMER_SECS = 180;  /* 3 minutes */
+  var WS_GRID_SIZE = 12;    /* 12 cols x 9 rows — wide so long words fit horizontally */
+  var WS_GRID_ROWS = 9;
+  var WS_TIMER_SECS = 300;  /* 5 minutes */
 
   /* State for the word search */
   var wsGrid      = [];      /* 2D array of letters */
@@ -599,58 +808,50 @@
      rest of the grid with random letters.
   ================================================================== */
   function buildWordSearch() {
-    /* Create blank grid */
+    /* ----------------------------------------------------------------
+       SIMPLIFIED grid build:
+       - Words only go LEFT-TO-RIGHT (horizontal) — easiest to spot!
+       - Each word gets its OWN dedicated row, so they never overlap
+       - Remaining cells filled with random letters
+       Grid is COLS wide x ROWS tall (COLS = length of longest word + padding)
+    ---------------------------------------------------------------- */
+    var COLS = WS_GRID_SIZE;  /* 12 */
+    var ROWS = WS_GRID_ROWS;  /* 9  */
+
     wsGrid = [];
     wsWordCells = {};
     wsFound = {};
-    for(var r=0; r<WS_GRID_SIZE; r++) {
+
+    /* Build blank ROWS x COLS grid */
+    for(var r=0; r<ROWS; r++) {
       wsGrid[r] = [];
-      for(var c=0; c<WS_GRID_SIZE; c++) wsGrid[r][c] = "";
+      for(var c=0; c<COLS; c++) wsGrid[r][c] = "";
     }
 
-    /* 8 possible directions: [dr, dc] */
-    var dirs = [
-      [0,1],[0,-1],[1,0],[-1,0],
-      [1,1],[1,-1],[-1,1],[-1,-1]
-    ];
+    /* Shuffle available rows so word positions vary each game */
+    var rowOrder = [];
+    for(var i=0; i<ROWS; i++) rowOrder.push(i);
+    rowOrder.sort(function(){ return Math.random()-0.5; });
 
-    /* Try to place each word */
-    WS_WORDS.forEach(function(word) {
+    /* Place each word left-to-right in its own shuffled row */
+    WS_WORDS.forEach(function(word, idx) {
       wsFound[word] = false;
-      var placed = false;
-      var attempts = 0;
-      while(!placed && attempts < 200) {
-        attempts++;
-        var dir = dirs[Math.floor(Math.random()*dirs.length)];
-        var dr = dir[0], dc = dir[1];
-        var r = Math.floor(Math.random()*WS_GRID_SIZE);
-        var c = Math.floor(Math.random()*WS_GRID_SIZE);
-        /* Check it fits */
-        var endR = r + dr*(word.length-1);
-        var endC = c + dc*(word.length-1);
-        if(endR<0||endR>=WS_GRID_SIZE||endC<0||endC>=WS_GRID_SIZE) continue;
-        /* Check no conflicts */
-        var ok = true;
-        for(var i=0; i<word.length; i++) {
-          var gr=r+dr*i, gc=c+dc*i;
-          if(wsGrid[gr][gc] !== "" && wsGrid[gr][gc] !== word[i]) { ok=false; break; }
-        }
-        if(!ok) continue;
-        /* Place the word */
-        wsWordCells[word] = [];
-        for(var i=0; i<word.length; i++) {
-          var gr=r+dr*i, gc=c+dc*i;
-          wsGrid[gr][gc] = word[i];
-          wsWordCells[word].push([gr,gc]);
-        }
-        placed = true;
+      var row = rowOrder[idx];
+      /* Random start column so word doesn't always start at col 0 */
+      var maxStart = COLS - word.length;
+      var startCol = Math.floor(Math.random() * (maxStart + 1));
+
+      wsWordCells[word] = [];
+      for(var i=0; i<word.length; i++) {
+        wsGrid[row][startCol+i] = word[i];
+        wsWordCells[word].push([row, startCol+i]);
       }
     });
 
-    /* Fill remaining cells with random uppercase letters */
+    /* Fill every remaining empty cell with a random letter */
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for(var r=0; r<WS_GRID_SIZE; r++)
-      for(var c=0; c<WS_GRID_SIZE; c++)
+    for(var r=0; r<ROWS; r++)
+      for(var c=0; c<COLS; c++)
         if(wsGrid[r][c]==="")
           wsGrid[r][c] = letters[Math.floor(Math.random()*letters.length)];
   }
@@ -659,12 +860,14 @@
      Render the word search grid into the DOM
   ================================================================== */
   function renderWordSearch() {
+    var COLS = WS_GRID_SIZE;
+    var ROWS = WS_GRID_ROWS;
     var gridEl = document.getElementById("ws-grid");
-    gridEl.style.gridTemplateColumns = "repeat("+WS_GRID_SIZE+",32px)";
+    gridEl.style.gridTemplateColumns = "repeat("+COLS+",26px)";
     gridEl.innerHTML = "";
 
-    for(var r=0; r<WS_GRID_SIZE; r++) {
-      for(var c=0; c<WS_GRID_SIZE; c++) {
+    for(var r=0; r<ROWS; r++) {
+      for(var c=0; c<COLS; c++) {
         var cell = document.createElement("div");
         cell.className = "ws-cell";
         cell.textContent = wsGrid[r][c];
@@ -681,8 +884,7 @@
       var chip = document.createElement("div");
       chip.className = "ws-word";
       chip.id = "ws-chip-"+word;
-      /* Display in a nicer format */
-      chip.textContent = word === "TWENTYONE" ? "TWENTY ONE" : word;
+      chip.textContent = word;
       wordsEl.appendChild(chip);
     });
   }
@@ -698,20 +900,21 @@
     return {r: parseInt(el.dataset.r), c: parseInt(el.dataset.c)};
   }
 
-  /* Calculates all cells on the straight line from start to end */
+  /* Calculates all cells on the straight line from start to end.
+     Since we only allow horizontal/vertical, any off-axis drag
+     just snaps to whichever axis moved more. */
   function getCellsInLine(start, end) {
     var cells = [];
-    var dr = Math.sign(end.r - start.r);
-    var dc = Math.sign(end.c - start.c);
-    /* Only allow 8 directions */
     var diffR = Math.abs(end.r - start.r);
     var diffC = Math.abs(end.c - start.c);
-    if(diffR !== 0 && diffC !== 0 && diffR !== diffC) {
-      /* Not a valid direction — just show start cell */
-      return [{r:start.r, c:start.c}];
-    }
+    /* Snap to the dominant axis */
+    var dr, dc;
+    if(diffR >= diffC) { dr = Math.sign(end.r-start.r); dc = 0; }
+    else               { dr = 0; dc = Math.sign(end.c-start.c); }
     var steps = Math.max(diffR, diffC);
-    for(var i=0; i<=steps; i++)
+    /* Only walk along the chosen axis */
+    var len = (dr===0) ? diffC : diffR;
+    for(var i=0; i<=len; i++)
       cells.push({r: start.r+dr*i, c: start.c+dc*i});
     return cells;
   }
@@ -814,6 +1017,8 @@
      Word search — open / win / lose / retry
   ================================================================== */
   function openWordSearch() {
+    /* Start background music on first tap (requires user gesture to work) */
+    startMusic();
     /* Hide hint */
     document.getElementById("hint").classList.add("hidden");
     /* Wiggle bunny */
@@ -843,11 +1048,27 @@
   function onAllWordsFound() {
     wsGameActive = false;
     stopWsTimer();
-    /* Show win screen after a tiny delay so the last word can go green */
-    setTimeout(function() {
-      document.getElementById("ws-game").style.display = "none";
-      document.getElementById("ws-win").style.display  = "flex";
-    }, 600);
+
+    /* SUCCESS FLOW FIX:
+       No win popup. No auto balloon. Return immediately to the bunny/envelope.
+       After this, tapping the envelope releases the balloon. */
+    document.getElementById("wordsearch-overlay").classList.remove("show");
+    document.getElementById("ws-game").style.display = "";
+    document.getElementById("ws-win").style.display  = "none";
+    document.getElementById("ws-lose").style.display = "none";
+
+    var scene = document.getElementById("scene");
+    scene.style.display = "flex";
+
+    var bw = document.getElementById("bunny-wrapper");
+    bw.onclick = releaseBalloon;
+    bw.title = "tap the envelope to release the balloon!";
+    bw.classList.add("wiggle");
+    setTimeout(function(){ bw.classList.remove("wiggle"); }, 500);
+
+    var h = document.getElementById("hint");
+    h.textContent = "(^w^) you found them! tap the envelope!";
+    h.classList.remove("hidden");
   }
 
   function onWordSearchLose() {
@@ -869,11 +1090,7 @@
     startWsTimer();
   }
 
-  /* Called when the "release the balloon" button is pressed */
-  function onWordSearchWin() {
-    document.getElementById("wordsearch-overlay").classList.remove("show");
-    releaseBalloon();
-  }
+  /* onWordSearchWin removed — balloon now auto-releases after word search win */
 
   /* ==================================================================
      BIRTHDAY CAKE — pixel art drawn on canvas
@@ -1069,16 +1286,20 @@
     document.getElementById("mic-bar-wrap").style.display  = "none";
     document.getElementById("candle-status").style.display = "none";
 
-    /* Big confetti burst in the centre of the screen */
-    spawnConfetti(window.innerWidth/2, window.innerHeight/2, 220);
+    /* Full-screen falling confetti BEFORE the collage */
+    startFallingConfetti();
 
-    /* Wait for confetti to settle, then transition to montage */
+    /* Sparkle fanfare! */
+    playSound("sparkle-sound", 0.7);
+
+    /* Wait while confetti falls, then show the calendar flip transition.
+       Confetti continues behind the calendar and collage. */
     setTimeout(function() {
       document.getElementById("bday-msg").classList.remove("visible");
-      buildMontage();
-    }, 2400); /* extra delay so confetti is clearly visible */
+      showCalendarTransition();
+    }, 1700);
 
-    document.getElementById("restart-btn").style.display = "inline-block";
+    document.getElementById("restart-btn").style.display = "none";
   }
 
   /* ==================================================================
@@ -1170,7 +1391,22 @@
   ];
   var ICONS = ["star","heart","flower","moon","star","heart","flower","moon"];
 
+  function buildBunting() {
+    var bar = document.getElementById("bunting-bar");
+    if(!bar) return;
+    bar.innerHTML = "";
+    var count = Math.ceil(window.innerWidth / 42) + 2;
+    for(var i=0; i<count; i++) {
+      var flag = document.createElement("span");
+      flag.className = "bunting-flag";
+      flag.style.animationDelay = (i * 0.08) + "s";
+      bar.appendChild(flag);
+    }
+  }
+
   function buildMontage() {
+    buildBunting();
+
     var grid = document.getElementById("photo-grid");
     grid.innerHTML = "";
 
@@ -1274,10 +1510,9 @@
     balloonWrap.style.display="block"; balloonWrap.style.opacity="1";
     balloonWrap.classList.remove("flying");
 
-    /* Show the instructions briefly */
+    /* No extra instruction popup — user asked for no windows here. */
     var instr = document.getElementById("balloon-instructions");
-    instr.style.display = "block";
-    setTimeout(function(){ instr.style.display="none"; }, 3200);
+    if(instr) instr.style.display = "none";
 
     /* Make balloon clickable/tappable */
     balloonImg.onclick      = catchBalloon;
@@ -1340,6 +1575,8 @@
   function catchBalloon() {
     if(balloonCaught) return;
     balloonCaught = true;
+    /* Play a little pop sound when she catches it */
+    playSound("pop-sound", 0.5);
     cancelAnimationFrame(driftId); clearTimeout(flyAwayTimer);
     document.removeEventListener("mousemove",onMouseMove);
     document.removeEventListener("touchmove",onTouchMove);
@@ -1366,6 +1603,7 @@
   var cCtx            = confettiCanvas.getContext("2d");
   var confettiAnim    = null;
   var confettiPieces  = [];
+  var confettiMode    = "burst";
 
   var CC = ["#f472b6","#a78bfa","#34d399","#fbbf24","#60a5fa","#fb923c","#f9a8d4","#c4b5fd"];
 
@@ -1374,6 +1612,7 @@
     confettiCanvas.width  = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
     confettiCanvas.style.display = "block";
+    confettiMode = "burst";
     confettiPieces = [];
     for(var i=0; i<count; i++) {
       var ang = Math.random()*Math.PI*2;
@@ -1392,8 +1631,62 @@
     confettiAnim = requestAnimationFrame(tickConfetti);
   }
 
+  function startFallingConfetti() {
+    confettiCanvas.width  = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+    confettiCanvas.style.display = "block";
+    confettiMode = "fall";
+    confettiPieces = [];
+
+    /* Lots of pieces already spread across and above the whole screen */
+    for(var i=0; i<360; i++) {
+      confettiPieces.push({
+        x:Math.random()*confettiCanvas.width,
+        y:-Math.random()*confettiCanvas.height,
+        vx:(Math.random()-0.5)*1.2,
+        vy:1.8+Math.random()*3.2,
+        rot:Math.random()*360,
+        rotV:(Math.random()-0.5)*8,
+        size:5+Math.random()*10,
+        shape:Math.random()>0.45?"rect":"circle",
+        color:CC[Math.floor(Math.random()*CC.length)],
+        alpha:0.95,
+        gravity:0
+      });
+    }
+
+    if(confettiAnim) cancelAnimationFrame(confettiAnim);
+    confettiAnim = requestAnimationFrame(tickConfetti);
+  }
+
   function tickConfetti() {
     cCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+
+    if(confettiMode === "fall") {
+      confettiPieces.forEach(function(p) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.rotV;
+
+        /* recycle piece back to the top so the whole screen keeps falling */
+        if(p.y > confettiCanvas.height + 30) {
+          p.y = -30;
+          p.x = Math.random()*confettiCanvas.width;
+        }
+
+        cCtx.save();
+        cCtx.globalAlpha = p.alpha;
+        cCtx.fillStyle = p.color;
+        cCtx.translate(p.x,p.y);
+        cCtx.rotate(p.rot*Math.PI/180);
+        if(p.shape==="rect") cCtx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
+        else { cCtx.beginPath(); cCtx.arc(0,0,p.size/2,0,Math.PI*2); cCtx.fill(); }
+        cCtx.restore();
+      });
+      confettiAnim = requestAnimationFrame(tickConfetti);
+      return;
+    }
+
     var alive = false;
     confettiPieces.forEach(function(p) {
       if(p.alpha<=0) return; alive=true;
@@ -1407,6 +1700,81 @@
     });
     if(alive) confettiAnim = requestAnimationFrame(tickConfetti);
     else confettiCanvas.style.display = "none";
+  }
+
+
+
+  /* ==================================================================
+     CALENDAR FLIP TRANSITION
+     Flips through months, lands on MAY, pins the 21st, then shows collage.
+  ================================================================== */
+  var calendarMonths = [
+    {name:"JAN", days:31, start:4},
+    {name:"FEB", days:28, start:0},
+    {name:"MAR", days:31, start:0},
+    {name:"APR", days:30, start:3},
+    {name:"MAY", days:31, start:5}
+  ];
+
+  function renderCalendarMonth(monthObj, pinDay) {
+    var monthName = document.getElementById("calendar-month");
+    var daysGrid  = document.getElementById("calendar-days");
+    monthName.textContent = monthObj.name;
+    daysGrid.innerHTML = "";
+
+    for(var e=0; e<monthObj.start; e++) {
+      var empty = document.createElement("div");
+      empty.className = "cal-day empty";
+      daysGrid.appendChild(empty);
+    }
+
+    for(var d=1; d<=monthObj.days; d++) {
+      var cell = document.createElement("div");
+      cell.className = "cal-day" + (pinDay === d ? " pin" : "");
+      cell.textContent = d;
+      daysGrid.appendChild(cell);
+    }
+  }
+
+  function showCalendarTransition() {
+    var screen = document.getElementById("calendar-screen");
+    var card   = document.getElementById("calendar-card");
+    var title  = document.getElementById("calendar-title");
+    var note   = document.getElementById("calendar-note");
+    var index  = 0;
+
+    screen.classList.add("show");
+    screen.setAttribute("aria-hidden","false");
+    title.textContent = "* finding the special day... *";
+    note.textContent  = "wait for it... (´｡• ᵕ •｡`) ♡";
+    renderCalendarMonth(calendarMonths[0], null);
+
+    function flipNext() {
+      if(index >= calendarMonths.length - 1) {
+        title.textContent = "* may 21st is the day!! *";
+        note.textContent  = "happy birthday beboo ♡";
+        renderCalendarMonth(calendarMonths[4], 21);
+        playSound("sparkle-sound", 0.65);
+        setTimeout(function() {
+          screen.classList.remove("show");
+          screen.setAttribute("aria-hidden","true");
+          buildMontage();
+        }, 1600);
+        return;
+      }
+
+      card.classList.add("flipping");
+      setTimeout(function() {
+        index++;
+        renderCalendarMonth(calendarMonths[index], null);
+      }, 160);
+      setTimeout(function() {
+        card.classList.remove("flipping");
+        setTimeout(flipNext, 360);
+      }, 360);
+    }
+
+    setTimeout(flipNext, 520);
   }
 
   /* ==================================================================
@@ -1429,11 +1797,14 @@
     document.getElementById("restart-btn").style.display="none";
     balloonActive=false; balloonCaught=false;
     balloonWrap.style.display="none"; balloonWrap.classList.remove("flying");
+    document.getElementById("bunny-wrapper").onclick = openWordSearch;
     hint.textContent="(u^w^u) tap the envelope!"; hint.classList.remove("hidden");
+    confettiMode="burst";
     if(confettiAnim){ cancelAnimationFrame(confettiAnim); confettiAnim=null; }
     cCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
     confettiCanvas.style.display="none";
     document.getElementById("montage").classList.remove("show");
+    document.getElementById("calendar-screen").classList.remove("show");
     document.getElementById("bday-msg").onclick=null;
   }
   </script>
